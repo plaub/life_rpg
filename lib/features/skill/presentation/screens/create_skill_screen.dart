@@ -106,14 +106,13 @@ class _CreateSkillScreenState extends ConsumerState<CreateSkillScreen> {
               ),
               const SizedBox(height: 16),
               SizedBox(
-                height: 200,
+                height: 350,
                 width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: IconSelector(
-                    selectedIcon: selectedIcon,
-                    onIconSelected: (icon) =>
-                        setDialogState(() => selectedIcon = icon),
-                  ),
+                child: IconSelector(
+                  selectedIcon: selectedIcon,
+                  onIconSelected: (icon) =>
+                      setDialogState(() => selectedIcon = icon),
+                  showPreview: true,
                 ),
               ),
             ],

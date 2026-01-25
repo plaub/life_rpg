@@ -446,4 +446,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emailVerificationPending =>
       'Email change pending. Please follow the link in the verification email.';
+
+  @override
+  String get convertAccountButton => 'Create Permanent Account';
+
+  @override
+  String get convertAccountTitle => 'Convert Account';
+
+  @override
+  String get convertAccountSubtitle =>
+      'Turn your guest account into a permanent one to save your data securely.';
+
+  @override
+  String get convertAccountInfo =>
+      'When you convert your account, all your progress will be kept. You can then log in from any device using your email and password.';
 }

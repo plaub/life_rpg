@@ -181,4 +181,8 @@ abstract class AppLocalizations {
   String get passwordResetEmailSent;
   String get sendResetLink;
   String get emailVerificationPending;
+  String get convertAccountButton;
+  String get convertAccountTitle;
+  String get convertAccountSubtitle;
+  String get convertAccountInfo;
 }

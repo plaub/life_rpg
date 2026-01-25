@@ -447,4 +447,18 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get emailVerificationPending =>
       'E-Mail-Änderung ausstehend. Bitte bestätige den Link in der Verifizierungs-E-Mail.';
+
+  @override
+  String get convertAccountButton => 'Vollständigen Account erstellen';
+
+  @override
+  String get convertAccountTitle => 'Account umwandeln';
+
+  @override
+  String get convertAccountSubtitle =>
+      'Mache aus deinem Gast-Account einen echten Account, um deine Daten sicher zu speichern.';
+
+  @override
+  String get convertAccountInfo =>
+      'Wenn du deinen Account umwandelst, bleiben alle deine Fortschritte erhalten. Du kannst dich danach von jedem Gerät aus mit deiner E-Mail und deinem Passwort anmelden.';
 }

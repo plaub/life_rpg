@@ -22,4 +22,5 @@ class RouteNames {
   static const String profileEditDetails = '/main/home/profile/edit';
   static const String profileChangeEmail = '/main/home/profile/email';
   static const String profileChangePassword = '/main/home/profile/password';
+  static const String profileConvertAccount = '/main/home/profile/convert';
 }

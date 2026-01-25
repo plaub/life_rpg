@@ -40,4 +40,10 @@ abstract class AuthRepository {
 
   /// Send password reset email
   Future<void> sendPasswordResetEmail(String email);
+
+  /// Link email and password to the current account (used for converting guest to permanent)
+  Future<UserEntity> linkEmailPassword({
+    required String email,
+    required String password,
+  });
 }

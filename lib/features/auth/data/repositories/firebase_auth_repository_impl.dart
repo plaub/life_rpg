@@ -77,4 +77,16 @@ class FirebaseAuthRepositoryImpl implements AuthRepository {
   Future<void> sendPasswordResetEmail(String email) async {
     await _datasource.sendPasswordResetEmail(email);
   }
+
+  @override
+  Future<UserEntity> linkEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    final userModel = await _datasource.linkEmailPassword(
+      email: email,
+      password: password,
+    );
+    return userModel.toEntity();
+  }
 }

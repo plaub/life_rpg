@@ -11,7 +11,7 @@ class FirebaseAuthDatasource {
 
   /// Stream of authentication state changes
   Stream<UserModel?> authStateChanges() {
-    return _firebaseAuth.authStateChanges().map((firebaseUser) {
+    return _firebaseAuth.userChanges().map((firebaseUser) {
       return firebaseUser != null
           ? UserModel.fromFirebaseUser(firebaseUser)
           : null;
@@ -117,6 +117,28 @@ class FirebaseAuthDatasource {
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    }
+  }
+
+  /// Link email and password to current account
+  Future<UserModel> linkEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) throw const UserNotFoundException();
+
+    final credential = firebase_auth.EmailAuthProvider.credential(
+      email: email,
+      password: password,
+    );
+
+    try {
+      final userCredential = await user.linkWithCredential(credential);
+      await userCredential.user!.reload();
+      return UserModel.fromFirebaseUser(_firebaseAuth.currentUser!);
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthException(e);
     }

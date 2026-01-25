@@ -9,6 +9,7 @@ import '../../domain/usecases/guest_login_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
+import '../../domain/usecases/link_email_password_usecase.dart';
 
 /// Provider for Firebase Auth instance
 final firebaseAuthProvider = Provider<firebase_auth.FirebaseAuth>((ref) {
@@ -44,6 +45,14 @@ final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
 final guestLoginUseCaseProvider = Provider<GuestLoginUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return GuestLoginUseCase(repository);
+});
+
+/// Provider for Link Email Password UseCase
+final linkEmailPasswordUseCaseProvider = Provider<LinkEmailPasswordUseCase>((
+  ref,
+) {
+  final repository = ref.watch(authRepositoryProvider);
+  return LinkEmailPasswordUseCase(repository);
 });
 
 /// Provider for Logout UseCase

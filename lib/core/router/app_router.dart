@@ -19,6 +19,7 @@ import '../../features/profile/presentation/screens/edit_profile_details_screen.
 import '../../features/profile/presentation/screens/change_email_screen.dart';
 import '../../features/profile/presentation/screens/change_password_screen.dart';
 import '../../features/profile/presentation/screens/convert_account_screen.dart';
+import '../../features/avatar/presentation/screens/avatar_builder_screen.dart';
 import 'main_scaffold.dart';
 import 'route_names.dart';
 
@@ -102,6 +103,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                         path: 'convert',
                         builder: (context, state) =>
                             const ConvertAccountScreen(),
+                      ),
+                      GoRoute(
+                        path: 'avatar',
+                        builder: (context, state) =>
+                            const AvatarBuilderScreen(),
                       ),
                     ],
                   ),

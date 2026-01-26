@@ -60,6 +60,7 @@ dependencies:
   # Fonts (for emoji support on web)
   google_fonts: ^6.2.1
   emoji_picker_flutter: ^4.4.0
+  model_viewer_plus: ^1.10.0
 
 dev_dependencies:
   flutter_test:

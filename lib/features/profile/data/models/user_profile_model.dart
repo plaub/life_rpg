@@ -1,17 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/user_profile.dart';
+import '../../../avatar/domain/entities/avatar_config.dart';
 
 class UserProfileModel {
   final String id;
   final String displayName;
   final int? age;
   final String? bio;
+  final Map<String, dynamic>? avatarConfig;
 
   const UserProfileModel({
     required this.id,
     required this.displayName,
     this.age,
     this.bio,
+    this.avatarConfig,
   });
 
   factory UserProfileModel.fromFirestore(
@@ -24,6 +27,7 @@ class UserProfileModel {
       displayName: data?['displayName'] ?? '',
       age: data?['age'],
       bio: data?['bio'],
+      avatarConfig: data?['avatarConfig'],
     );
   }
 
@@ -32,6 +36,7 @@ class UserProfileModel {
       if (displayName.isNotEmpty) 'displayName': displayName,
       if (age != null) 'age': age,
       if (bio != null) 'bio': bio,
+      if (avatarConfig != null) 'avatarConfig': avatarConfig,
     };
   }
 
@@ -42,6 +47,9 @@ class UserProfileModel {
       email: email,
       age: age,
       bio: bio,
+      avatarConfig: avatarConfig != null
+          ? AvatarConfig.fromJson(avatarConfig!)
+          : null,
     );
   }
 
@@ -51,6 +59,7 @@ class UserProfileModel {
       displayName: entity.displayName,
       age: entity.age,
       bio: entity.bio,
+      avatarConfig: entity.avatarConfig?.toJson(),
     );
   }
 }

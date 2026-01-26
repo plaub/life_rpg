@@ -5,6 +5,8 @@ import '../../../../core/router/route_names.dart';
 import '../../../../core/i18n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/profile_providers.dart';
+import '../../../avatar/presentation/components/avatar_viewer.dart';
+import '../../../avatar/domain/entities/avatar_config.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -42,15 +44,22 @@ class ProfileScreen extends ConsumerWidget {
               Center(
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      child: Text(
-                        displayName.isNotEmpty
-                            ? displayName[0].toUpperCase()
-                            : '?',
-                        style: const TextStyle(fontSize: 40),
+                    if (profile?.avatarConfig != null)
+                      AvatarViewer(
+                        config: profile!.avatarConfig!,
+                        height: 120,
+                        autoRotate: false,
+                      )
+                    else
+                      CircleAvatar(
+                        radius: 50,
+                        child: Text(
+                          displayName.isNotEmpty
+                              ? displayName[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(fontSize: 40),
+                        ),
                       ),
-                    ),
                     const SizedBox(height: 16),
                     if (isAnonymous)
                       Container(
@@ -147,6 +156,14 @@ class ProfileScreen extends ConsumerWidget {
                       subtitle: Text(l10n.editDetailsSubtitle),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => context.go(RouteNames.profileEditDetails),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.accessibility_new_outlined),
+                      title: const Text('Customize 3D Avatar'),
+                      subtitle: const Text('Change your 3D character'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.go(RouteNames.profileAvatarBuilder),
                     ),
                     if (!isAnonymous) ...[
                       const Divider(height: 1),

@@ -1,9 +1,12 @@
+import '../../../avatar/domain/entities/avatar_config.dart';
+
 class UserProfile {
   final String id; // Matches Auth UID
   final String displayName;
   final String email;
   final int? age;
   final String? bio;
+  final AvatarConfig? avatarConfig;
 
   const UserProfile({
     required this.id,
@@ -11,6 +14,7 @@ class UserProfile {
     required this.email,
     this.age,
     this.bio,
+    this.avatarConfig,
   });
 
   UserProfile copyWith({
@@ -18,6 +22,7 @@ class UserProfile {
     String? email,
     int? age,
     String? bio,
+    AvatarConfig? avatarConfig,
   }) {
     return UserProfile(
       id: id,
@@ -25,6 +30,7 @@ class UserProfile {
       email: email ?? this.email,
       age: age ?? this.age,
       bio: bio ?? this.bio,
+      avatarConfig: avatarConfig ?? this.avatarConfig,
     );
   }
 }

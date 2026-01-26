@@ -8,6 +8,7 @@ import '../../domain/entities/home_stats.dart';
 import '../providers/home_providers.dart';
 import '../../../skill/presentation/providers/skill_providers.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
+import '../../../avatar/presentation/providers/avatar_providers.dart';
 
 /// Home screen - MVP Overview of life progress
 class HomeScreen extends ConsumerWidget {
@@ -137,7 +138,6 @@ class _PlayerHeader extends ConsumerWidget {
     final userProfile = ref.watch(userProfileProvider).value;
 
     // Default values if loading
-    final totalXP = state.asData?.value.totalXP ?? 0;
     final totalTime = state.asData?.value.totalTime ?? Duration.zero;
     final totalSkills = state.asData?.value.totalSkills ?? 0;
 
@@ -187,16 +187,57 @@ class _PlayerHeader extends ConsumerWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: theme.colorScheme.primary,
-                        child: Text(
-                          displayName[0],
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 30, // Increased size slightly
+                            backgroundColor: theme.colorScheme.primary,
+                            child: Text(
+                              displayName[0],
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                color: theme.colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
+                          // Level Badge
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: ref
+                                .watch(avatarProgressProvider)
+                                .when(
+                                  data: (progress) {
+                                    if (progress == null)
+                                      return const SizedBox.shrink();
+                                    return Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.tertiary,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: theme
+                                              .colorScheme
+                                              .primaryContainer,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        '${progress.level}',
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                              color:
+                                                  theme.colorScheme.onTertiary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  loading: () => const SizedBox.shrink(),
+                                  error: (_, __) => const SizedBox.shrink(),
+                                ),
+                          ),
+                        ],
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -215,8 +256,123 @@ class _PlayerHeader extends ConsumerWidget {
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.onPrimaryContainer,
+                                letterSpacing: -0.5,
                               ),
                             ),
+                            const SizedBox(height: 12),
+                            // Avatar Progress Bar (Polished)
+                            ref
+                                .watch(avatarProgressProvider)
+                                .when(
+                                  data: (progress) {
+                                    if (progress == null)
+                                      return const SizedBox.shrink();
+                                    final percent =
+                                        progress.xpCurrent / progress.xpTotal;
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          height: 10,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: theme
+                                                    .colorScheme
+                                                    .tertiary
+                                                    .withValues(alpha: 0.2),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
+                                            child: LinearProgressIndicator(
+                                              value: percent,
+                                              backgroundColor: theme
+                                                  .colorScheme
+                                                  .onPrimaryContainer
+                                                  .withValues(alpha: 0.1),
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    theme.colorScheme.tertiary,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Level ${progress.level}',
+                                              style: theme.textTheme.labelMedium
+                                                  ?.copyWith(
+                                                    color: theme
+                                                        .colorScheme
+                                                        .tertiary,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                            Text(
+                                              '${progress.xpCurrent} / ${progress.xpTotal} XP',
+                                              style: theme.textTheme.labelSmall
+                                                  ?.copyWith(
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onPrimaryContainer
+                                                        .withValues(alpha: 0.6),
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        // Compact Stats Row
+                                        Row(
+                                          children: [
+                                            _compactHeaderStat(
+                                              context,
+                                              Icons.timer_rounded,
+                                              timeString,
+                                              Colors.blueAccent,
+                                            ),
+                                            const SizedBox(width: 16),
+                                            _compactHeaderStat(
+                                              context,
+                                              Icons.book_rounded,
+                                              '$totalSkills Skills',
+                                              Colors.purpleAccent,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  loading: () => ClipRRect(
+                                    borderRadius: BorderRadius.circular(5),
+                                    child: LinearProgressIndicator(
+                                      minHeight: 10,
+                                      backgroundColor: theme
+                                          .colorScheme
+                                          .onPrimaryContainer
+                                          .withValues(alpha: 0.1),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        theme.colorScheme.tertiary,
+                                      ),
+                                    ),
+                                  ),
+                                  error: (_, __) => const SizedBox.shrink(),
+                                ),
                           ],
                         ),
                       ),
@@ -224,85 +380,34 @@ class _PlayerHeader extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-
-              // Stats Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _StatItem(
-                    label: localizations.homeTotalXP,
-                    value: '$totalXP',
-                    icon: Icons.star_rounded,
-                    color: Colors.amber,
-                  ),
-                  _StatItem(
-                    label: localizations.homeTotalTime,
-                    value: timeString,
-                    icon: Icons.timer_rounded,
-                    color: Colors.blueAccent,
-                  ),
-                  _StatItem(
-                    label: localizations.homeTotalSkills,
-                    value: '$totalSkills',
-                    icon: Icons.book_rounded,
-                    color: Colors.purpleAccent,
-                  ),
-                ],
-              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  const _StatItem({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _compactHeaderStat(
+    BuildContext context,
+    IconData icon,
+    String text,
+    Color color,
+  ) {
     final theme = Theme.of(context);
-    return Column(
+    final textColor = theme.colorScheme.onPrimaryContainer.withValues(
+      alpha: 0.8,
+    );
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface, // Icon background remains surface
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Icon(icon, color: color, size: 28),
-        ),
-        const SizedBox(height: 8),
+        Icon(icon, size: 16, color: textColor),
+        const SizedBox(width: 4),
         Text(
-          value,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onPrimaryContainer,
-          ),
-        ),
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+          text,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: textColor,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

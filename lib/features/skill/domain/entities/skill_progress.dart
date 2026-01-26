@@ -1,6 +1,6 @@
-import 'dart:math';
 import 'skill.dart';
 import 'skill_log.dart';
+import '../logic/xp_calculator.dart';
 
 class SkillProgress {
   final String id;
@@ -36,13 +36,14 @@ class SkillProgress {
     required Skill skill,
   }) {
     final now = DateTime.now();
+    final progress = LevelCalculator.getProgress(0, base: 50, growth: 1.7);
     return SkillProgress(
       id: id,
       userId: userId,
       skill: skill,
-      level: 1,
-      xpCurrent: 0,
-      xpTotal: 50, // Level 1 requires 50 XP to reach Level 2
+      level: progress.$1,
+      xpCurrent: progress.$2,
+      xpTotal: progress.$3,
       totalXp: 0,
       createdAt: now,
       updatedAt: now,
@@ -97,24 +98,14 @@ class SkillProgress {
     final totalXp = sortedLogs.fold<int>(0, (sum, log) => sum + log.xpEarned);
 
     // 3. Level Calculation
-    // Formula: level = floor(sqrt(totalXP / 50)) + 1
-    const baseLevelXp = 50;
-
-    final calculatedIndex = sqrt(totalXp / baseLevelXp).floor();
-    final level = calculatedIndex + 1;
-
-    // Boundary Calculation: StartXP(L) = 50 * (L-1)^2
-    int getXpStartOfLevel(int l) {
-      if (l <= 1) return 0;
-      final idx = l - 1;
-      return baseLevelXp * idx * idx;
-    }
-
-    final xpStartOfCurrentLevel = getXpStartOfLevel(level);
-    final xpStartOfNextLevel = getXpStartOfLevel(level + 1);
-
-    final xpCurrent = totalXp - xpStartOfCurrentLevel;
-    final xpTotalRange = xpStartOfNextLevel - xpStartOfCurrentLevel;
+    final progress = LevelCalculator.getProgress(
+      totalXp,
+      base: 50,
+      growth: 1.7,
+    );
+    final level = progress.$1;
+    final xpCurrent = progress.$2;
+    final xpTotalRange = progress.$3;
 
     // Last Practiced
     final lastDate = sortedLogs.last.date;

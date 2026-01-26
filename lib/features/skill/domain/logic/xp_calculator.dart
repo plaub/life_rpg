@@ -78,3 +78,45 @@ class XPCalculator {
     return (timeFactor * typeFactor * tagFactor).round();
   }
 }
+
+class LevelCalculator {
+  // Base XP defining the scale
+  // Growth defining the exponential increase
+  // Formula: totalXP = base * (growth^(level-1) - 1)
+  // Inverse: level = floor(log(totalXP/base + 1) / log(growth)) + 1
+
+  static int calculateLevel(
+    int totalXp, {
+    int base = 100,
+    double growth = 1.4,
+  }) {
+    if (totalXp <= 0) return 1;
+    final level = (log(totalXp / base + 1) / log(growth)).floor() + 1;
+    return level;
+  }
+
+  static int getXpStartOfLevel(
+    int level, {
+    int base = 100,
+    double growth = 1.4,
+  }) {
+    if (level <= 1) return 0;
+    return (base * (pow(growth, level - 1) - 1)).round();
+  }
+
+  static (int level, int xpCurrent, int xpTotalRange) getProgress(
+    int totalXp, {
+    int base = 100,
+    double growth = 1.4,
+  }) {
+    final level = calculateLevel(totalXp, base: base, growth: growth);
+    final startOfCurrent = getXpStartOfLevel(level, base: base, growth: growth);
+    final startOfNext = getXpStartOfLevel(
+      level + 1,
+      base: base,
+      growth: growth,
+    );
+
+    return (level, totalXp - startOfCurrent, startOfNext - startOfCurrent);
+  }
+}

@@ -3,7 +3,7 @@ import 'package:life_rpg/features/skill/domain/logic/xp_calculator.dart';
 
 void main() {
   group('XPCalculator', () {
-    test('Example 1: Learn (Short) - 20min, Learn, No Tags -> 4 XP', () {
+    test('Example 1: Learn (Short) - 20min, Learn, No Tags -> 36 XP', () {
       final xp = XPCalculator.calculateXP(
         durationMinutes: 20,
         sessionType: SkillSessionType.learn,
@@ -12,11 +12,11 @@ void main() {
       // sqrt(20) = 4.47
       // Type: 0.8
       // Tags: 0
-      // 4.47 * 0.8 = 3.576 -> round(3.576) = 4
-      expect(xp, 4);
+      // 10 * 4.47 * 0.8 = 35.76 -> round(35.76) = 36
+      expect(xp, 36);
     });
 
-    test('Example 2: Apply + Repeat - 45min, Apply, [repeat] -> 7 XP', () {
+    test('Example 2: Apply + Repeat - 45min, Apply, [repeat] -> 70 XP', () {
       final xp = XPCalculator.calculateXP(
         durationMinutes: 45,
         sessionType: SkillSessionType.apply,
@@ -25,12 +25,12 @@ void main() {
       // sqrt(45) = 6.708
       // Type: 1.0
       // Tags: +0.05
-      // 6.708 * 1.0 * 1.05 = 7.04 -> round(7.04) = 7
-      expect(xp, 7);
+      // 10 * 6.708 * 1.0 * 1.05 = 70.4 -> round(70.4) = 70
+      expect(xp, 70);
     });
 
     test(
-      'Example 3: Both + Challenge + Teach - 60min, Both, [challenge, teach] -> 11 XP',
+      'Example 3: Both + Challenge + Teach - 60min, Both, [challenge, teach] -> 112 XP',
       () {
         final xp = XPCalculator.calculateXP(
           durationMinutes: 60,
@@ -40,8 +40,8 @@ void main() {
         // sqrt(60) = 7.746
         // Type: 1.2
         // Tags: 0.1 + 0.1 = +0.2 (Cap reached essentially, but exact match)
-        // 7.746 * 1.2 * 1.2 = 11.15 -> round(11.15) = 11
-        expect(xp, 11);
+        // 10 * 7.746 * 1.2 * 1.2 = 111.5 -> round(111.5) = 112
+        expect(xp, 112);
       },
     );
 
@@ -58,8 +58,8 @@ void main() {
       // sqrt(100) = 10
       // Type: 1.0
       // Tags: 1.2 (capped)
-      // 10 * 1.0 * 1.2 = 12
-      expect(xp, 12);
+      // 10 * 10 * 1.0 * 1.2 = 120
+      expect(xp, 120);
     });
 
     test('Zero duration should be 0 XP', () {

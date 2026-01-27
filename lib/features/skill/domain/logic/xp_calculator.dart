@@ -74,8 +74,8 @@ class XPCalculator {
     final totalTagBonus = tags.fold<double>(0.0, (sum, tag) => sum + tag.bonus);
     final tagFactor = 1 + min(totalTagBonus, 0.2);
 
-    // Final Formula: round(sqrt(durationMinutes) * sessionTypeFactor * (1 + tagFactor))
-    return (timeFactor * typeFactor * tagFactor).round();
+    // Final Formula: round(10 * sqrt(durationMinutes) * sessionTypeFactor * tagFactor)
+    return (10 * timeFactor * typeFactor * tagFactor).round();
   }
 }
 

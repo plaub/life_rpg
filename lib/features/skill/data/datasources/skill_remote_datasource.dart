@@ -65,9 +65,15 @@ class SkillRemoteDataSourceImpl implements SkillRemoteDataSource {
 
   @override
   Future<SkillModel?> getSkill(String skillId) async {
-    final doc = await _skills.doc(skillId).get();
-    if (doc.exists) {
-      return SkillModel.fromFirestore(doc);
+    try {
+      final doc = await _skills.doc(skillId).get();
+      if (doc.exists) {
+        return SkillModel.fromFirestore(doc);
+      }
+    } catch (e) {
+      // If we don't have permission (e.g. document doesn't exist and rules are strict),
+      // or other Firestore errors, treat as not found.
+      return null;
     }
     return null;
   }
@@ -165,13 +171,15 @@ class SkillRemoteDataSourceImpl implements SkillRemoteDataSource {
 
   @override
   Future<SkillCategoryModel?> getCategory(DocumentReference ref) async {
-    final doc = await ref.get();
-    if (doc.exists && doc.data() is Map<String, dynamic>) {
-      // We have to cast safely because DocumentSnapshot is generic but usually holds Map<String,dynamic> if fetched via collection ref
-      // But here ref might be generic.
-      return SkillCategoryModel.fromFirestore(
-        doc as DocumentSnapshot<Map<String, dynamic>>,
-      );
+    try {
+      final doc = await ref.get();
+      if (doc.exists && doc.data() is Map<String, dynamic>) {
+        return SkillCategoryModel.fromFirestore(
+          doc as DocumentSnapshot<Map<String, dynamic>>,
+        );
+      }
+    } catch (e) {
+      return null;
     }
     return null;
   }

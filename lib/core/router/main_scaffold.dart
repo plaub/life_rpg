@@ -19,9 +19,6 @@ class MainScaffold extends ConsumerStatefulWidget {
 }
 
 class _MainScaffoldState extends ConsumerState<MainScaffold> {
-  int? _lastLevel;
-  final Map<String, int> _lastSkillLevels = {};
-
   void _onTap(int index) {
     widget.navigationShell.goBranch(
       index,
@@ -37,11 +34,14 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     ref.listen(avatarProgressProvider, (previous, next) {
       final newLevel = next.value?.level;
       if (newLevel != null) {
-        if (_lastLevel != null && newLevel > _lastLevel!) {
-          // Level UP!
-          LevelUpOverlay.show(context, newLevel);
+        final hadPrevious = previous?.hasValue ?? false;
+
+        if (hadPrevious) {
+          final oldLevel = previous?.value?.level ?? 1;
+          if (newLevel > oldLevel) {
+            LevelUpOverlay.show(context, newLevel);
+          }
         }
-        _lastLevel = newLevel;
       }
     });
 
@@ -50,17 +50,21 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       final newLevels = next.value;
       if (newLevels != null) {
         final skillNames = ref.read(skillNamesProvider).value ?? {};
+        final hadPrevious = previous?.hasValue ?? false;
+        final oldLevels = previous?.value ?? {};
 
         for (final entry in newLevels.entries) {
           final skillId = entry.key;
           final newLevel = entry.value;
-          final lastLevel = _lastSkillLevels[skillId];
 
-          if (lastLevel != null && newLevel > lastLevel) {
-            final skillName = skillNames[skillId] ?? 'Skill';
-            LevelUpOverlay.show(context, newLevel, skillName: skillName);
+          if (hadPrevious) {
+            // If it's a new skill in this session, it started at level 1.
+            final oldLevel = oldLevels[skillId] ?? 1;
+            if (newLevel > oldLevel) {
+              final skillName = skillNames[skillId] ?? 'Skill';
+              LevelUpOverlay.show(context, newLevel, skillName: skillName);
+            }
           }
-          _lastSkillLevels[skillId] = newLevel;
         }
       }
     });

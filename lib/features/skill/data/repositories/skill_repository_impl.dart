@@ -85,6 +85,21 @@ class SkillRepositoryImpl implements SkillRepository {
 
   @override
   Future<void> deleteSkill(String skillId) async {
+    // 1. Get logs for this skill to delete them (Casading Delete)
+    // We need the userId. Ideally we'd have a deleteLogsForSkill(skillId) in DataSource.
+    // For now we fetch and delete.
+    final skill = await getSkill(skillId);
+    if (skill != null) {
+      final logs = await _remoteDataSource.getLogsForSkill(
+        skillId,
+        skill.userId,
+      );
+      for (final log in logs) {
+        await _remoteDataSource.deleteLog(log.id);
+      }
+    }
+
+    // 2. Delete the skill itself
     await _remoteDataSource.deleteSkill(skillId);
   }
 

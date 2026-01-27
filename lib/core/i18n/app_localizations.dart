@@ -185,4 +185,12 @@ abstract class AppLocalizations {
   String get convertAccountTitle;
   String get convertAccountSubtitle;
   String get convertAccountInfo;
+
+  // Level Up / Skill Up Celebrations
+  String get levelUpTitle;
+  String get skillUpTitle;
+  String skillUpMessage(String skillName, int level);
+  String get levelUpSuccessBody;
+  String get skillUpSuccessBody;
+  String get continueButton;
 }

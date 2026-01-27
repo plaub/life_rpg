@@ -111,8 +111,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 ),
                 obscureText: true,
                 validator: (v) {
-                  if (v != _newPasswordController.text)
+                  if (v != _newPasswordController.text) {
                     return l10n.passwordsDoNotMatch;
+                  }
                   return null;
                 },
               ),

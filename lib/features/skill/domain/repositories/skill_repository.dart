@@ -42,4 +42,7 @@ abstract class SkillRepository {
 
   /// Get all logs for a user (across all skills).
   Future<List<SkillLog>> getAllLogs(String userId);
+
+  /// Stream of all logs for a user.
+  Stream<List<SkillLog>> getAllLogsStream(String userId);
 }

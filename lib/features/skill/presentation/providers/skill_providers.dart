@@ -110,3 +110,55 @@ final allLogsProvider = FutureProvider.autoDispose<List<SkillLog>>((ref) async {
   final repository = ref.watch(skillRepositoryProvider);
   return repository.getAllLogs(user.id);
 });
+
+// Stream of all logs for the current user
+final allLogsStreamProvider = StreamProvider.autoDispose<List<SkillLog>>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return const Stream.empty();
+
+  final repository = ref.watch(skillRepositoryProvider);
+  return repository.getAllLogsStream(user.id);
+});
+
+// All Skill Progress map (id -> Progress)
+final allSkillProgressProvider =
+    Provider.autoDispose<AsyncValue<Map<String, int>>>((ref) {
+      final logsAsync = ref.watch(allLogsStreamProvider);
+
+      return logsAsync.whenData((logs) {
+        // Group logs by skill
+        final groupedLogs = <String, List<SkillLog>>{};
+        final skillNames = <String, String>{};
+
+        for (final log in logs) {
+          groupedLogs.putIfAbsent(log.skill.id, () => []).add(log);
+          skillNames[log.skill.id] = log.skill.name;
+        }
+
+        // Calculate level for each skill
+        final levels = <String, int>{};
+        for (final entry in groupedLogs.entries) {
+          final progress = SkillProgress.fromLogs(
+            id: 'calculated',
+            userId: entry.value.first.userId,
+            skill: entry.value.first.skill,
+            logs: entry.value,
+          );
+          levels[entry.key] = progress.level;
+        }
+        return levels;
+      });
+    });
+
+// Helper provider for skill names
+final skillNamesProvider =
+    Provider.autoDispose<AsyncValue<Map<String, String>>>((ref) {
+      final logsAsync = ref.watch(allLogsStreamProvider);
+      return logsAsync.whenData((logs) {
+        final names = <String, String>{};
+        for (final log in logs) {
+          names[log.skill.id] = log.skill.name;
+        }
+        return names;
+      });
+    });

@@ -461,4 +461,25 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get convertAccountInfo =>
       'Wenn du deinen Account umwandelst, bleiben alle deine Fortschritte erhalten. Du kannst dich danach von jedem Gerät aus mit deiner E-Mail und deinem Passwort anmelden.';
+
+  @override
+  String get levelUpTitle => 'LEVEL UP!';
+
+  @override
+  String get skillUpTitle => 'SKILL UP!';
+
+  @override
+  String skillUpMessage(String skillName, int level) =>
+      '$skillName ist jetzt Level $level!';
+
+  @override
+  String get levelUpSuccessBody =>
+      'Hervorragende Arbeit! Setze deine Reise fort und erreiche neue Höhen.';
+
+  @override
+  String get skillUpSuccessBody =>
+      'Deine Fähigkeiten wachsen weiter. Bleib dran!';
+
+  @override
+  String get continueButton => 'WEITER';
 }

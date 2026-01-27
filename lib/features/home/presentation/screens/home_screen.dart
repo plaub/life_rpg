@@ -9,6 +9,8 @@ import '../providers/home_providers.dart';
 import '../../../skill/presentation/providers/skill_providers.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
 import '../../../avatar/presentation/providers/avatar_providers.dart';
+import '../../../skill/domain/services/debug_xp_service.dart';
+import '../../../../core/config/app_config.dart';
 
 /// Home screen - MVP Overview of life progress
 class HomeScreen extends ConsumerWidget {
@@ -19,6 +21,8 @@ class HomeScreen extends ConsumerWidget {
     // Watch the home stats provider
     final statsAsync = ref.watch(homeStatsProvider);
     final localizations = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final config = ref.watch(appConfigProvider);
 
     // Pull to refresh logic
     Future<void> onRefresh() async {
@@ -118,6 +122,38 @@ class HomeScreen extends ConsumerWidget {
 
             // Bottom padding
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+            // Debug Section
+            if (config.isDebug)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Center(
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final userId = ref.read(currentUserProvider)?.id;
+                        if (userId != null) {
+                          final repo = ref.read(skillRepositoryProvider);
+                          final service = DebugXpService(repo);
+                          await service.addDebugXp(userId);
+
+                          // Force refresh of stats and progress
+                          ref.invalidate(homeStatsProvider);
+                          ref.invalidate(avatarProgressProvider);
+                        }
+                      },
+                      icon: const Icon(Icons.bug_report),
+                      label: const Text('DEBUG: +50 XP'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: theme.colorScheme.error,
+                        side: BorderSide(color: theme.colorScheme.error),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 48)),
           ],
         ),
       ),
@@ -208,8 +244,9 @@ class _PlayerHeader extends ConsumerWidget {
                                 .watch(avatarProgressProvider)
                                 .when(
                                   data: (progress) {
-                                    if (progress == null)
+                                    if (progress == null) {
                                       return const SizedBox.shrink();
+                                    }
                                     return Container(
                                       padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(
@@ -234,7 +271,7 @@ class _PlayerHeader extends ConsumerWidget {
                                     );
                                   },
                                   loading: () => const SizedBox.shrink(),
-                                  error: (_, __) => const SizedBox.shrink(),
+                                  error: (_, _) => const SizedBox.shrink(),
                                 ),
                           ),
                         ],
@@ -265,8 +302,9 @@ class _PlayerHeader extends ConsumerWidget {
                                 .watch(avatarProgressProvider)
                                 .when(
                                   data: (progress) {
-                                    if (progress == null)
+                                    if (progress == null) {
                                       return const SizedBox.shrink();
+                                    }
                                     final percent =
                                         progress.xpCurrent / progress.xpTotal;
                                     return Column(
@@ -371,7 +409,7 @@ class _PlayerHeader extends ConsumerWidget {
                                       ),
                                     ),
                                   ),
-                                  error: (_, __) => const SizedBox.shrink(),
+                                  error: (_, _) => const SizedBox.shrink(),
                                 ),
                           ],
                         ),

@@ -24,6 +24,7 @@ abstract class SkillRemoteDataSource {
     int? limit,
   });
   Future<List<SkillLogModel>> getLogsForUser(String userId, {int? limit});
+  Stream<List<SkillLogModel>> getLogsForUserStream(String userId, {int? limit});
   Future<SkillLogModel?> getLog(String logId);
   Future<void> createLog(SkillLogModel log);
   Future<void> deleteLog(String logId);
@@ -121,6 +122,26 @@ class SkillRemoteDataSourceImpl implements SkillRemoteDataSource {
     return snapshot.docs
         .map((doc) => SkillLogModel.fromFirestore(doc))
         .toList();
+  }
+
+  @override
+  Stream<List<SkillLogModel>> getLogsForUserStream(
+    String userId, {
+    int? limit,
+  }) {
+    Query<Map<String, dynamic>> query = _skillLogs
+        .where('userId', isEqualTo: userId)
+        .orderBy('date', descending: true);
+
+    if (limit != null) {
+      query = query.limit(limit);
+    }
+
+    return query.snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => SkillLogModel.fromFirestore(doc))
+          .toList();
+    });
   }
 
   @override

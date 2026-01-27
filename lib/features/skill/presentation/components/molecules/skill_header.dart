@@ -22,6 +22,7 @@ class SkillHeader extends StatelessWidget {
       padding: const EdgeInsets.all(24.0),
       color: theme.colorScheme.surface,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -49,13 +50,13 @@ class SkillHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           LevelProgressBar(
             currentXp: progress?.xpCurrent ?? 0,
             requiredXp: progress?.xpTotal ?? 50,
-            height: 10,
+            height: 12,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

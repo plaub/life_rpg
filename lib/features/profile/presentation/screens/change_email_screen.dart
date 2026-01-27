@@ -117,8 +117,9 @@ class _ChangeEmailScreenState extends ConsumerState<ChangeEmailScreen> {
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (v) {
-                  if (v != _newEmailController.text)
+                  if (v != _newEmailController.text) {
                     return l10n.emailsDoNotMatch;
+                  }
                   return null;
                 },
               ),

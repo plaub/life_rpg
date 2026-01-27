@@ -182,4 +182,30 @@ class SkillRepositoryImpl implements SkillRepository {
     }
     return logs;
   }
+
+  @override
+  Stream<List<SkillLog>> getAllLogsStream(String userId) {
+    return _remoteDataSource.getLogsForUserStream(userId).asyncMap((
+      logModels,
+    ) async {
+      final skillIds = logModels.map((m) => m.skillId).toSet();
+      final skillMap = <String, Skill>{};
+
+      for (final skillId in skillIds) {
+        final skill = await getSkill(skillId);
+        if (skill != null) {
+          skillMap[skillId] = skill;
+        }
+      }
+
+      final logs = <SkillLog>[];
+      for (final model in logModels) {
+        final skill = skillMap[model.skillId];
+        if (skill != null) {
+          logs.add(model.toEntity(skill));
+        }
+      }
+      return logs;
+    });
+  }
 }

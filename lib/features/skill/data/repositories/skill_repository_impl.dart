@@ -129,6 +129,27 @@ class SkillRepositoryImpl implements SkillRepository {
   }
 
   @override
+  Future<void> deleteCategory(String id) async {
+    // 1. Get the category to find the userId (for secure lookup)
+    final category = await _remoteDataSource.getCategoryById(id);
+    if (category == null) return;
+
+    // 2. Cascade Delete: Delete all skills and their logs in this category
+    final categoryRef = _remoteDataSource.createCategoryRef(id);
+    final skills = await _remoteDataSource.getSkillsByCategory(
+      category.userId,
+      categoryRef,
+    );
+
+    for (final skill in skills) {
+      await deleteSkill(skill.id);
+    }
+
+    // Finally delete the category
+    await _remoteDataSource.deleteCategory(id);
+  }
+
+  @override
   Stream<List<SkillCategory>> getCategories(String userId) {
     return _remoteDataSource.getCategories(userId).map((models) {
       return models.map((model) => model.toEntity()).toList();

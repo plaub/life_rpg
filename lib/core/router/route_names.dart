@@ -15,6 +15,7 @@ class RouteNames {
   static const String createSkill = '/main/skills/create';
   static const String skillDetail = '/main/skills/:id';
   static const String editSkill = '/main/skills/:id/edit';
+  static const String manageCategories = '/main/skills/categories';
   static const String editLog = '/main/skills/:id/logs/:logId/edit';
   static const String analytics = '/main/analytics';
   static const String settings = '/main/settings';

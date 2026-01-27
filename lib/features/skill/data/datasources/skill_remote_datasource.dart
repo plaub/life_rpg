@@ -9,9 +9,14 @@ abstract class SkillRemoteDataSource {
   Future<SkillModel?> getSkill(String skillId);
   Future<void> saveSkill(SkillModel skill);
   Future<void> deleteSkill(String skillId);
+  Future<List<SkillModel>> getSkillsByCategory(
+    String userId,
+    DocumentReference categoryRef,
+  );
 
   Stream<List<SkillCategoryModel>> getCategories(String userId);
   Future<void> saveCategory(SkillCategoryModel category);
+  Future<void> deleteCategory(String id);
 
   Future<List<SkillLogModel>> getLogsForSkill(
     String skillId,
@@ -88,6 +93,18 @@ class SkillRemoteDataSourceImpl implements SkillRemoteDataSource {
   @override
   Future<void> deleteSkill(String skillId) async {
     await _skills.doc(skillId).delete();
+  }
+
+  @override
+  Future<List<SkillModel>> getSkillsByCategory(
+    String userId,
+    DocumentReference categoryRef,
+  ) async {
+    final snapshot = await _skills
+        .where('userId', isEqualTo: userId)
+        .where('categoryRef', isEqualTo: categoryRef)
+        .get();
+    return snapshot.docs.map((doc) => SkillModel.fromFirestore(doc)).toList();
   }
 
   @override
@@ -198,6 +215,11 @@ class SkillRemoteDataSourceImpl implements SkillRemoteDataSource {
     await _skillCategories
         .doc(category.id)
         .set(category.toFirestore(), SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> deleteCategory(String id) async {
+    await _skillCategories.doc(id).delete();
   }
 
   @override

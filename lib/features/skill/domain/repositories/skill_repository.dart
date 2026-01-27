@@ -25,6 +25,9 @@ abstract class SkillRepository {
   /// Create or update a skill category.
   Future<void> saveCategory(SkillCategory category);
 
+  /// Delete a skill category.
+  Future<void> deleteCategory(String id);
+
   /// Create a new log entry.
   Future<void> createLog(SkillLog log);
 

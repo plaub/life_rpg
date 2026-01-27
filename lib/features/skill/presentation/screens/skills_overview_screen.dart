@@ -26,6 +26,13 @@ class SkillsOverviewScreen extends ConsumerWidget {
         title: Text(l10n.skillsTitle),
         actions: [
           IconButton(
+            icon: const Icon(Icons.settings_applications), // Or Icons.category
+            onPressed: () {
+              context.push(RouteNames.manageCategories);
+            },
+            tooltip: l10n.categoryLabel,
+          ),
+          IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () {
               showModalBottomSheet(

@@ -12,6 +12,7 @@ import '../../features/skill/presentation/screens/skills_overview_screen.dart';
 import '../../features/skill/presentation/screens/create_skill_screen.dart';
 import '../../features/skill/presentation/screens/skill_detail_screen.dart';
 import '../../features/skill/presentation/screens/edit_skill_screen.dart';
+import '../../features/skill/presentation/screens/manage_categories_screen.dart';
 import '../../features/skill/presentation/screens/edit_log_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -116,6 +117,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: RouteNames.skills,
                 builder: (context, state) => const SkillsOverviewScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'categories', // /main/skills/categories
+                    builder: (context, state) => const ManageCategoriesScreen(),
+                  ),
                   GoRoute(
                     path: 'create', // /main/skills/create
                     builder: (context, state) => const CreateSkillScreen(),

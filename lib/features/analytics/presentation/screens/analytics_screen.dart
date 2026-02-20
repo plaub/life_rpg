@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/app_localizations.dart';
 import '../../../skill/presentation/providers/skill_providers.dart';
 import '../components/skill_radar_chart.dart';
-import '../components/last_30_days_chart.dart';
+import '../components/active_days_chart.dart';
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({super.key});
@@ -15,7 +15,7 @@ class AnalyticsScreen extends ConsumerWidget {
 
     final skillsAsync = ref.watch(skillsProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
-    final logsAsync = ref.watch(allLogsProvider);
+    final logsAsync = ref.watch(allLogsStreamProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(localizations.analyticsTitle)),
@@ -31,6 +31,16 @@ class AnalyticsScreen extends ConsumerWidget {
                   0,
                   (sum, log) => sum + log.xpEarned,
                 );
+                final totalMinutes = logs.fold<int>(
+                  0,
+                  (sum, log) => sum + (log.durationMinutes ?? 0),
+                );
+                final totalHours = totalMinutes ~/ 60;
+                final remainingMin = totalMinutes % 60;
+                final timeStr = totalHours > 0
+                    ? '${totalHours}h ${remainingMin}m'
+                    : '${totalMinutes}m';
+
                 return skillsAsync.when(
                   data: (skills) {
                     return Row(
@@ -43,13 +53,22 @@ class AnalyticsScreen extends ConsumerWidget {
                             color: Colors.amber,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: _MetricCard(
                             label: localizations.analyticsSkills,
                             value: skills.length.toString(),
                             icon: Icons.star,
                             color: Colors.blue,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _MetricCard(
+                            label: localizations.analyticsTotalTime,
+                            value: timeStr,
+                            icon: Icons.timer_outlined,
+                            color: Colors.teal,
                           ),
                         ),
                       ],
@@ -134,9 +153,9 @@ class AnalyticsScreen extends ConsumerWidget {
 
             const SizedBox(height: 32),
 
-            // 3. Last 30 Days Chart
+            // 3. Active Days Chart
             Text(
-              localizations.analyticsLast30Days,
+              localizations.analyticsActiveDays,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -152,7 +171,7 @@ class AnalyticsScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return Last30DaysChart(logs: logs);
+                return ActiveDaysChart(logs: logs);
               },
               loading: () => const SizedBox(
                 height: 200,
@@ -192,7 +211,7 @@ class _MetricCard extends StatelessWidget {
         side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -202,19 +221,19 @@ class _MetricCard extends StatelessWidget {
                 color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: color, size: 20),
+              child: Icon(icon, color: color, size: 18),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(
               value,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),

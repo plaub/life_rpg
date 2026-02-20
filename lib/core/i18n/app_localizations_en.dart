@@ -106,7 +106,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analyticsNotEnoughData => 'Not enough data for chart';
 
   @override
-  String get analyticsLast30Days => 'Last 30 Days Activity';
+  String get analyticsActiveDays => 'Active Days';
+
+  @override
+  String get analyticsTotalTime => 'Time Invested';
 
   @override
   String get analyticsNoActivity => 'No activity yet';

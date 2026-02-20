@@ -54,7 +54,8 @@ abstract class AppLocalizations {
   String get analyticsSkills;
   String get analyticsDistribution;
   String get analyticsNotEnoughData;
-  String get analyticsLast30Days;
+  String get analyticsActiveDays;
+  String get analyticsTotalTime;
   String get analyticsNoActivity;
   String get analyticsError;
 

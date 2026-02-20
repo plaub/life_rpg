@@ -122,6 +122,10 @@ abstract class AppLocalizations {
   String get categoryNameRequired;
   String get errorLoadingCategories;
   String get iconLabel;
+  String get iconSelectorPrompt;
+  String get iconSelectorSelected;
+  String get iconSelectorNoRecents;
+  String get iconSelectorSearchHint;
   String get fieldRequired;
   String levelUpMessage(int level);
   String xpGainedMessage(int xp);

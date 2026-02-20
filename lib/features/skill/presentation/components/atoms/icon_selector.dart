@@ -1,6 +1,8 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 
+import 'package:life_rpg/core/i18n/app_localizations.dart';
+
 /// Slack-inspired emoji/icon selector using emoji_picker_flutter
 class IconSelector extends StatelessWidget {
   final String selectedIcon;
@@ -20,6 +22,7 @@ class IconSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxHeight ?? 400),
@@ -66,9 +69,13 @@ class IconSelector extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Wähle ein Icon',
+                      selectedIcon.isEmpty
+                          ? l10n.iconSelectorPrompt
+                          : l10n.iconSelectorSelected,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        color: colorScheme.onSurface,
+                        color: selectedIcon.isEmpty
+                            ? colorScheme.onSurfaceVariant
+                            : colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -97,9 +104,9 @@ class IconSelector extends StatelessWidget {
                     horizontalSpacing: 0,
                     gridPadding: const EdgeInsets.symmetric(horizontal: 8),
                     backgroundColor: colorScheme.surfaceContainer,
-                    noRecents: const Text(
-                      'Keine kürzlich verwendeten Emojis',
-                      style: TextStyle(fontSize: 14),
+                    noRecents: Text(
+                      l10n.iconSelectorNoRecents,
+                      style: const TextStyle(fontSize: 14),
                     ),
                     buttonMode: ButtonMode.CUPERTINO,
                     loadingIndicator: const Center(
@@ -125,7 +132,7 @@ class IconSelector extends StatelessWidget {
                   searchViewConfig: SearchViewConfig(
                     backgroundColor: colorScheme.surface,
                     buttonIconColor: colorScheme.onSurfaceVariant,
-                    hintText: 'Suche Emoji...',
+                    hintText: l10n.iconSelectorSearchHint,
                   ),
                   skinToneConfig: SkinToneConfig(
                     enabled: true,

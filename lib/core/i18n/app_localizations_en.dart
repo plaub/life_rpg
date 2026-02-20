@@ -279,6 +279,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get iconLabel => 'Icon';
 
   @override
+  String get iconSelectorPrompt => 'Choose an icon';
+
+  @override
+  String get iconSelectorSelected => 'Icon selected ✓';
+
+  @override
+  String get iconSelectorNoRecents => 'No recently used emojis';
+
+  @override
+  String get iconSelectorSearchHint => 'Search emoji...';
+
+  @override
   String get fieldRequired => 'Required';
 
   @override

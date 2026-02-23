@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:math';
 import 'package:life_rpg/core/i18n/app_localizations.dart';
+import 'package:life_rpg/core/theme/app_colors.dart';
 
 class LevelUpOverlay extends StatefulWidget {
   final int newLevel;
@@ -54,9 +55,10 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final isSkill = widget.skillName != null;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: 0.7),
+      backgroundColor: Colors.black.withValues(alpha: 0.75),
       body: Stack(
         children: [
           // Confetti
@@ -64,20 +66,20 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
             alignment: Alignment.topCenter,
             child: ConfettiWidget(
               confettiController: _confettiController,
-              blastDirection: pi / 2, // downwards
+              blastDirection: pi / 2,
               maxBlastForce: 5,
               minBlastForce: 2,
               emissionFrequency: 0.05,
               numberOfParticles: 20,
               gravity: 0.1,
               shouldLoop: false,
-              colors: const [
-                Colors.green,
-                Colors.blue,
-                Colors.pink,
-                Colors.orange,
-                Colors.purple,
-                Colors.yellow,
+              colors: [
+                AppColors.xpGold,
+                AppColors.levelPurple,
+                AppColors.successGreen,
+                AppColors.lightPrimary,
+                AppColors.lightSecondary,
+                AppColors.darkPrimary,
               ],
             ),
           ),
@@ -86,16 +88,27 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
           Center(
             child: Container(
               margin: const EdgeInsets.all(32),
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.xpGold.withValues(alpha: 0.2)
+                      : theme.colorScheme.outlineVariant,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    spreadRadius: 5,
+                    color: AppColors.xpGold.withValues(alpha: 0.25),
+                    blurRadius: 40,
+                    spreadRadius: 2,
                   ),
+                  if (isDark)
+                    BoxShadow(
+                      color: AppColors.levelPurple.withValues(alpha: 0.15),
+                      blurRadius: 60,
+                      spreadRadius: 5,
+                    ),
                 ],
               ),
               child: Column(
@@ -105,16 +118,21 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
                     isSkill ? '⭐' : '🎉',
                     style: const TextStyle(fontSize: 64),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    isSkill ? l10n.skillUpTitle : l10n.levelUpTitle,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
-                      letterSpacing: 2,
+                  const SizedBox(height: 20),
+                  ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: [AppColors.xpGold, AppColors.levelPurple],
+                    ).createShader(bounds),
+                    child: Text(
+                      isSkill ? l10n.skillUpTitle : l10n.levelUpTitle,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white, // Required for ShaderMask
+                        letterSpacing: 2,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Text(
                     isSkill
                         ? l10n.skillUpMessage(
@@ -125,7 +143,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 12),
                   Text(
                     isSkill ? l10n.skillUpSuccessBody : l10n.levelUpSuccessBody,
                     textAlign: TextAlign.center,
@@ -136,15 +154,6 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: widget.onClose,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 48,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
                     child: Text(l10n.continueButton),
                   ),
                 ],

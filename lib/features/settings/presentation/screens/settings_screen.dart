@@ -20,110 +20,149 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsTitle)),
       body: ListView(
+        padding: const EdgeInsets.all(20),
         children: [
           // Theme Section
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               localizations.themeSection,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          RadioGroup<ThemeMode>(
-            groupValue: themeMode,
-            onChanged: (value) {
-              if (value != null) {
-                ref.read(themeModeProvider.notifier).setThemeMode(value);
-              }
-            },
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.light_mode),
-                  title: Text(localizations.lightTheme),
-                  trailing: const Radio<ThemeMode>(value: ThemeMode.light),
-                  onTap: () => ref
-                      .read(themeModeProvider.notifier)
-                      .setThemeMode(ThemeMode.light),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.dark_mode),
-                  title: Text(localizations.darkTheme),
-                  trailing: const Radio<ThemeMode>(value: ThemeMode.dark),
-                  onTap: () => ref
-                      .read(themeModeProvider.notifier)
-                      .setThemeMode(ThemeMode.dark),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings_system_daydream),
-                  title: Text(localizations.systemTheme),
-                  trailing: const Radio<ThemeMode>(value: ThemeMode.system),
-                  onTap: () => ref
-                      .read(themeModeProvider.notifier)
-                      .setThemeMode(ThemeMode.system),
-                ),
-              ],
+          Card(
+            child: RadioGroup<ThemeMode>(
+              groupValue: themeMode,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(themeModeProvider.notifier).setThemeMode(value);
+                }
+              },
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(
+                      Icons.light_mode_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: Text(localizations.lightTheme),
+                    trailing: const Radio<ThemeMode>(value: ThemeMode.light),
+                    onTap: () => ref
+                        .read(themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.light),
+                  ),
+                  Divider(
+                    height: 1,
+                    indent: 56,
+                    color: theme.colorScheme.outlineVariant,
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.dark_mode_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: Text(localizations.darkTheme),
+                    trailing: const Radio<ThemeMode>(value: ThemeMode.dark),
+                    onTap: () => ref
+                        .read(themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.dark),
+                  ),
+                  Divider(
+                    height: 1,
+                    indent: 56,
+                    color: theme.colorScheme.outlineVariant,
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.brightness_auto_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: Text(localizations.systemTheme),
+                    trailing: const Radio<ThemeMode>(value: ThemeMode.system),
+                    onTap: () => ref
+                        .read(themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.system),
+                  ),
+                ],
+              ),
             ),
           ),
 
-          const Divider(),
+          const SizedBox(height: 24),
 
           // Language Section
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               localizations.languageSection,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          RadioGroup<String>(
-            groupValue: locale.languageCode,
-            onChanged: (value) {
-              if (value != null) {
-                ref.read(localeProvider.notifier).setLocale(Locale(value));
-              }
-            },
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.language),
-                  title: Text(localizations.languageGerman),
-                  trailing: const Radio<String>(value: 'de'),
-                  onTap: () => ref
-                      .read(localeProvider.notifier)
-                      .setLocale(const Locale('de')),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.language),
-                  title: Text(localizations.languageEnglish),
-                  trailing: const Radio<String>(value: 'en'),
-                  onTap: () => ref
-                      .read(localeProvider.notifier)
-                      .setLocale(const Locale('en')),
-                ),
-              ],
+          Card(
+            child: RadioGroup<String>(
+              groupValue: locale.languageCode,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(localeProvider.notifier).setLocale(Locale(value));
+                }
+              },
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(
+                      Icons.language_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: Text(localizations.languageGerman),
+                    trailing: const Radio<String>(value: 'de'),
+                    onTap: () => ref
+                        .read(localeProvider.notifier)
+                        .setLocale(const Locale('de')),
+                  ),
+                  Divider(
+                    height: 1,
+                    indent: 56,
+                    color: theme.colorScheme.outlineVariant,
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.language_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: Text(localizations.languageEnglish),
+                    trailing: const Radio<String>(value: 'en'),
+                    onTap: () => ref
+                        .read(localeProvider.notifier)
+                        .setLocale(const Locale('en')),
+                  ),
+                ],
+              ),
             ),
           ),
 
-          const Divider(),
+          const SizedBox(height: 32),
 
           // Logout
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
               onPressed: () async {
                 final logoutUseCase = ref.read(logoutUseCaseProvider);
                 await logoutUseCase();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.error,
-                foregroundColor: theme.colorScheme.onError,
+              icon: const Icon(Icons.logout_rounded),
+              label: Text(localizations.logoutButton),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: theme.colorScheme.error,
+                side: BorderSide(color: theme.colorScheme.error),
+                padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: Text(localizations.logoutButton),
             ),
           ),
         ],

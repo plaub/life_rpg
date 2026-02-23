@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../domain/entities/home_stats.dart';
 import '../providers/home_providers.dart';
@@ -36,8 +37,9 @@ class HomeScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: RefreshIndicator(
+        color: theme.colorScheme.primary,
         onRefresh: onRefresh,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -46,17 +48,17 @@ class HomeScreen extends ConsumerWidget {
             SliverToBoxAdapter(child: _PlayerHeader(state: statsAsync)),
 
             // Spacing
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            const SliverToBoxAdapter(child: SizedBox(height: 28)),
 
             // Category Section Title
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Text(
                   localizations.homeCategoryOverview,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -70,13 +72,23 @@ class HomeScreen extends ConsumerWidget {
                   return SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Text(
-                          localizations.homeNoCategories,
-                          style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(
-                                color: Theme.of(context).disabledColor,
+                        padding: const EdgeInsets.all(40.0),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.explore_outlined,
+                              size: 56,
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.4),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              localizations.homeNoCategories,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -84,14 +96,14 @@ class HomeScreen extends ConsumerWidget {
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 0.85, // Adjust for card height
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.85,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
                         ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return _CategoryCard(
@@ -115,9 +127,7 @@ class HomeScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(24.0),
                     child: Text(
                       'Error: $err',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                      style: TextStyle(color: theme.colorScheme.error),
                     ),
                   ),
                 ),
@@ -131,7 +141,7 @@ class HomeScreen extends ConsumerWidget {
             if (config.isDebug)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Center(
                     child: OutlinedButton.icon(
                       onPressed: () async {
@@ -176,6 +186,7 @@ class _PlayerHeader extends ConsumerWidget {
     final localizations = AppLocalizations.of(context);
     final user = ref.watch(currentUserProvider);
     final userProfile = ref.watch(userProfileProvider).value;
+    final isDark = theme.brightness == Brightness.dark;
 
     // Default values if loading
     final totalTime = state.asData?.value.totalTime ?? Duration.zero;
@@ -200,18 +211,20 @@ class _PlayerHeader extends ConsumerWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  AppColors.headerGradientStartDark,
+                  AppColors.headerGradientEndDark,
+                ]
+              : [AppColors.headerGradientStart, AppColors.headerGradientEnd],
+        ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(32),
           bottomRight: Radius.circular(32),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
       ),
       child: SafeArea(
         bottom: false,
@@ -229,14 +242,24 @@ class _PlayerHeader extends ConsumerWidget {
                     children: [
                       Stack(
                         children: [
-                          CircleAvatar(
-                            radius: 30, // Increased size slightly
-                            backgroundColor: theme.colorScheme.primary,
-                            child: Text(
-                              displayName[0],
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                color: theme.colorScheme.onPrimary,
-                                fontWeight: FontWeight.bold,
+                          Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.2),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                width: 2,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                displayName[0],
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -252,14 +275,17 @@ class _PlayerHeader extends ConsumerWidget {
                                       return const SizedBox.shrink();
                                     }
                                     return Container(
-                                      padding: const EdgeInsets.all(4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: theme.colorScheme.tertiary,
-                                        shape: BoxShape.circle,
+                                        color: AppColors.xpGold,
+                                        borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
-                                          color: theme
-                                              .colorScheme
-                                              .primaryContainer,
+                                          color: isDark
+                                              ? AppColors.darkSurface
+                                              : AppColors.lightPrimary,
                                           width: 2,
                                         ),
                                       ),
@@ -267,9 +293,9 @@ class _PlayerHeader extends ConsumerWidget {
                                         '${progress.level}',
                                         style: theme.textTheme.labelSmall
                                             ?.copyWith(
-                                              color:
-                                                  theme.colorScheme.onTertiary,
+                                              color: Colors.white,
                                               fontWeight: FontWeight.bold,
+                                              fontSize: 10,
                                             ),
                                       ),
                                     );
@@ -288,20 +314,19 @@ class _PlayerHeader extends ConsumerWidget {
                             Text(
                               localizations.homeWelcome,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onPrimaryContainer
-                                    .withValues(alpha: 0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                             ),
                             Text(
                               displayName,
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onPrimaryContainer,
+                                color: Colors.white,
                                 letterSpacing: -0.5,
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            // Avatar Progress Bar (Polished)
+                            const SizedBox(height: 14),
+                            // Avatar Progress Bar
                             ref
                                 .watch(avatarProgressProvider)
                                 .when(
@@ -316,37 +341,43 @@ class _PlayerHeader extends ConsumerWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          height: 10,
+                                          height: 8,
                                           width: double.infinity,
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(
-                                              5,
+                                              4,
                                             ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: theme
-                                                    .colorScheme
-                                                    .tertiary
-                                                    .withValues(alpha: 0.2),
-                                                blurRadius: 4,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
                                           ),
                                           child: ClipRRect(
                                             borderRadius: BorderRadius.circular(
-                                              5,
+                                              4,
                                             ),
-                                            child: LinearProgressIndicator(
-                                              value: percent,
-                                              backgroundColor: theme
-                                                  .colorScheme
-                                                  .onPrimaryContainer
-                                                  .withValues(alpha: 0.1),
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                    theme.colorScheme.tertiary,
+                                            child: Stack(
+                                              children: [
+                                                // Background
+                                                Container(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.15),
+                                                ),
+                                                // Progress
+                                                FractionallySizedBox(
+                                                  widthFactor: percent,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: [
+                                                          AppColors.xpGold,
+                                                          AppColors.xpGoldLight,
+                                                        ],
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            4,
+                                                          ),
+                                                    ),
                                                   ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -359,9 +390,8 @@ class _PlayerHeader extends ConsumerWidget {
                                               'Level ${progress.level}',
                                               style: theme.textTheme.labelMedium
                                                   ?.copyWith(
-                                                    color: theme
-                                                        .colorScheme
-                                                        .tertiary,
+                                                    color:
+                                                        AppColors.xpGoldLight,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                             ),
@@ -369,9 +399,7 @@ class _PlayerHeader extends ConsumerWidget {
                                               '${progress.xpCurrent} / ${progress.xpTotal} XP',
                                               style: theme.textTheme.labelSmall
                                                   ?.copyWith(
-                                                    color: theme
-                                                        .colorScheme
-                                                        .onPrimaryContainer
+                                                    color: Colors.white
                                                         .withValues(alpha: 0.6),
                                                     fontWeight: FontWeight.w500,
                                                   ),
@@ -386,14 +414,12 @@ class _PlayerHeader extends ConsumerWidget {
                                               context,
                                               Icons.timer_rounded,
                                               timeString,
-                                              Colors.blueAccent,
                                             ),
                                             const SizedBox(width: 16),
                                             _compactHeaderStat(
                                               context,
                                               Icons.book_rounded,
                                               '$totalSkills Skills',
-                                              Colors.purpleAccent,
                                             ),
                                           ],
                                         ),
@@ -401,16 +427,16 @@ class _PlayerHeader extends ConsumerWidget {
                                     );
                                   },
                                   loading: () => ClipRRect(
-                                    borderRadius: BorderRadius.circular(5),
+                                    borderRadius: BorderRadius.circular(4),
                                     child: LinearProgressIndicator(
-                                      minHeight: 10,
-                                      backgroundColor: theme
-                                          .colorScheme
-                                          .onPrimaryContainer
-                                          .withValues(alpha: 0.1),
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        theme.colorScheme.tertiary,
+                                      minHeight: 8,
+                                      backgroundColor: Colors.white.withValues(
+                                        alpha: 0.15,
                                       ),
+                                      valueColor:
+                                          const AlwaysStoppedAnimation<Color>(
+                                            AppColors.xpGold,
+                                          ),
                                     ),
                                   ),
                                   error: (_, _) => const SizedBox.shrink(),
@@ -430,25 +456,16 @@ class _PlayerHeader extends ConsumerWidget {
     );
   }
 
-  Widget _compactHeaderStat(
-    BuildContext context,
-    IconData icon,
-    String text,
-    Color color,
-  ) {
-    final theme = Theme.of(context);
-    final textColor = theme.colorScheme.onPrimaryContainer.withValues(
-      alpha: 0.8,
-    );
+  Widget _compactHeaderStat(BuildContext context, IconData icon, String text) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: textColor),
+        Icon(icon, size: 14, color: Colors.white.withValues(alpha: 0.7)),
         const SizedBox(width: 4),
         Text(
           text,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: textColor,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: Colors.white.withValues(alpha: 0.8),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -476,31 +493,37 @@ class _CategoryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context);
     final color = _parseColor(category.categoryColor);
+    final isDark = theme.brightness == Brightness.dark;
 
     // Format Time
     final hours = category.totalTime.inHours;
-    final minutes = category.totalTime.inMinutes.remainder(60); // Correction
-    // Simpler: just hours if > 0, else minutes? Or "2h 15m"?
-    // Space is limited in grid. Let's do "Xh Ym"
+    final minutes = category.totalTime.inMinutes.remainder(60);
     final timeStr = '${hours}h ${minutes}m';
 
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? color.withValues(alpha: 0.2)
+              : theme.colorScheme.outlineVariant,
+          width: 1,
+        ),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
+          if (!isDark)
+            BoxShadow(
+              color: color.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           onTap: () {
             // Set filter in provider
             final container = ProviderScope.containerOf(context, listen: false);
@@ -516,25 +539,19 @@ class _CategoryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Icon & Title
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        category.categoryIcon.isNotEmpty
-                            ? category.categoryIcon
-                            : '📁',
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    ),
-                    // Maybe XP Badge here?
-                  ],
+                // Icon
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: isDark ? 0.2 : 0.1),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(
+                    category.categoryIcon.isNotEmpty
+                        ? category.categoryIcon
+                        : '📁',
+                    style: const TextStyle(fontSize: 24),
+                  ),
                 ),
 
                 const Spacer(),
@@ -542,7 +559,7 @@ class _CategoryCard extends StatelessWidget {
                 Text(
                   category.categoryName,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -555,21 +572,21 @@ class _CategoryCard extends StatelessWidget {
                   context,
                   Icons.star_rounded,
                   '${category.totalXP} ${localizations.xpLabel}',
-                  Colors.amber,
+                  AppColors.xpGold,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 _compactStat(
                   context,
                   Icons.timer_outlined,
                   timeStr,
-                  Colors.blueAccent,
+                  theme.colorScheme.primary,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 _compactStat(
                   context,
                   Icons.layers_outlined,
                   '${category.skillCount} Skills',
-                  Colors.purpleAccent,
+                  AppColors.levelPurple,
                 ),
               ],
             ),
@@ -589,13 +606,15 @@ class _CategoryCard extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontSize: 12,
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.7),
+        Expanded(
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

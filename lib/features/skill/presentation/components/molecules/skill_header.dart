@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/theme/app_colors.dart';
 import '../../../domain/entities/skill.dart';
 import '../../../domain/entities/skill_progress.dart';
 import '../atoms/category_chip.dart';
@@ -13,14 +14,36 @@ class SkillHeader extends StatelessWidget {
 
   const SkillHeader({super.key, required this.skill, this.progress});
 
+  Color _parseColor(String hexCode) {
+    try {
+      final hex = hexCode.replaceAll('#', '');
+      return Color(int.parse('FF$hex', radix: 16));
+    } catch (_) {
+      return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final level = progress?.level ?? 1;
+    final isDark = theme.brightness == Brightness.dark;
+    final categoryColor = _parseColor(skill.category.color);
 
     return Container(
       padding: const EdgeInsets.all(24.0),
-      color: theme.colorScheme.surface,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [AppColors.darkSurface, categoryColor.withValues(alpha: 0.1)]
+              : [
+                  categoryColor.withValues(alpha: 0.06),
+                  categoryColor.withValues(alpha: 0.02),
+                ],
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

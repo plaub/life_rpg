@@ -14,6 +14,7 @@ class SkillsOverviewScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
     // Use the filtered provider
     final skillsAsync = ref.watch(filteredSkillsProvider);
     final activeFilterId = ref.watch(categoryFilterProvider);
@@ -26,14 +27,14 @@ class SkillsOverviewScreen extends ConsumerWidget {
         title: Text(l10n.skillsTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_applications), // Or Icons.category
+            icon: const Icon(Icons.settings_applications_rounded),
             onPressed: () {
               context.push(RouteNames.manageCategories);
             },
             tooltip: l10n.categoryLabel,
           ),
           IconButton(
-            icon: const Icon(Icons.filter_list),
+            icon: const Icon(Icons.tune_rounded),
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -50,15 +51,19 @@ class SkillsOverviewScreen extends ConsumerWidget {
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
+                    horizontal: 20,
                     vertical: 8,
                   ),
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.06),
+                  ),
                   child: Row(
                     children: [
                       Text(
                         l10n.filterBy,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       InputChip(
@@ -81,7 +86,7 @@ class SkillsOverviewScreen extends ConsumerWidget {
                         onDeleted: () {
                           ref.read(categoryFilterProvider.notifier).set(null);
                         },
-                        deleteIcon: const Icon(Icons.close, size: 18),
+                        deleteIcon: const Icon(Icons.close_rounded, size: 18),
                       ),
                     ],
                   ),
@@ -96,11 +101,19 @@ class SkillsOverviewScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.auto_awesome, size: 64, color: Colors.grey),
+                  Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 56,
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.4,
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     l10n.noSkillsHere,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   if (activeFilterId != null) ...[
                     const SizedBox(height: 8),
@@ -124,7 +137,7 @@ class SkillsOverviewScreen extends ConsumerWidget {
           context.push(RouteNames.createSkill);
         },
         label: Text(l10n.addSkillButton),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.add_rounded),
       ),
     );
   }
@@ -157,7 +170,7 @@ class _FilterBottomSheet extends ConsumerWidget {
               ),
             ),
           ),
-          const Divider(),
+          Divider(color: theme.colorScheme.outlineVariant),
           Flexible(
             child: categoriesAsync.when(
               data: (categories) {
@@ -173,20 +186,33 @@ class _FilterBottomSheet extends ConsumerWidget {
                   children: [
                     // Option: All
                     ListTile(
-                      leading: const CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        child: Icon(Icons.apps, color: Colors.white, size: 20),
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primary.withValues(
+                          alpha: 0.1,
+                        ),
+                        child: Icon(
+                          Icons.apps_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 20,
+                        ),
                       ),
                       title: Text(l10n.allCategories),
                       trailing: activeFilterId == null
-                          ? Icon(Icons.check, color: theme.colorScheme.primary)
+                          ? Icon(
+                              Icons.check_rounded,
+                              color: theme.colorScheme.primary,
+                            )
                           : null,
                       onTap: () {
                         ref.read(categoryFilterProvider.notifier).set(null);
                         Navigator.pop(context);
                       },
                     ),
-                    const Divider(height: 1, indent: 72),
+                    Divider(
+                      height: 1,
+                      indent: 72,
+                      color: theme.colorScheme.outlineVariant,
+                    ),
 
                     // Categories
                     ...categories.map((category) {
@@ -195,14 +221,14 @@ class _FilterBottomSheet extends ConsumerWidget {
                         final hex = category.color.replaceAll('#', '');
                         catColor = Color(int.parse('FF$hex', radix: 16));
                       } catch (_) {
-                        catColor = Colors.blue;
+                        catColor = theme.colorScheme.primary;
                       }
 
                       final isSelected = activeFilterId == category.id;
 
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: catColor.withValues(alpha: 0.2),
+                          backgroundColor: catColor.withValues(alpha: 0.15),
                           child: Text(
                             category.icon.isNotEmpty ? category.icon : '📁',
                             style: const TextStyle(fontSize: 20),
@@ -211,7 +237,7 @@ class _FilterBottomSheet extends ConsumerWidget {
                         title: Text(category.name),
                         trailing: isSelected
                             ? Icon(
-                                Icons.check,
+                                Icons.check_rounded,
                                 color: theme.colorScheme.primary,
                               )
                             : null,

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/theme/app_colors.dart';
 
 /// Start/Welcome screen - first screen users see
 class StartScreen extends StatelessWidget {
@@ -12,64 +13,119 @@ class StartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // App Icon/Logo placeholder
-              Icon(
-                Icons.rocket_launch,
-                size: 120,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(height: 32),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? [AppColors.darkBackground, AppColors.darkSurface]
+                : [
+                    AppColors.lightBackground,
+                    AppColors.lightPrimary.withValues(alpha: 0.06),
+                  ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Column(
+              children: [
+                const Spacer(flex: 3),
 
-              // Welcome Title
-              Text(
-                localizations.welcomeTitle,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
+                // App Icon / Logo
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: isDark
+                          ? [AppColors.darkPrimary, AppColors.darkSecondary]
+                          : [
+                              AppColors.headerGradientStart,
+                              AppColors.headerGradientEnd,
+                            ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            (isDark
+                                    ? AppColors.darkPrimary
+                                    : AppColors.lightPrimary)
+                                .withValues(alpha: 0.3),
+                        blurRadius: 24,
+                        spreadRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.rocket_launch_rounded,
+                    size: 56,
+                    color: Colors.white,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 40),
 
-              // Subtitle
-              Text(
-                localizations.welcomeSubtitle,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                // Welcome Title
+                Text(
+                  localizations.welcomeTitle,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 64),
+                const SizedBox(height: 12),
 
-              // Login Button
-              ElevatedButton(
-                onPressed: () => context.push(RouteNames.login),
-                child: Text(localizations.loginButton),
-              ),
-              const SizedBox(height: 16),
+                // Subtitle
+                Text(
+                  localizations.welcomeSubtitle,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
 
-              // Signup Button
-              OutlinedButton(
-                onPressed: () => context.push(RouteNames.signup),
-                child: Text(localizations.signupButton),
-              ),
-              const SizedBox(height: 32),
+                const Spacer(flex: 3),
 
-              // Guest Login Button (Dev Mode)
-              TextButton(
-                onPressed: () => context.push(RouteNames.guest),
-                child: Text(localizations.guestButton),
-              ),
-            ],
+                // Login Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => context.push(RouteNames.login),
+                    child: Text(localizations.loginButton),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Signup Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () => context.push(RouteNames.signup),
+                    child: Text(localizations.signupButton),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Guest Login Button
+                TextButton(
+                  onPressed: () => context.push(RouteNames.guest),
+                  child: Text(localizations.guestButton),
+                ),
+
+                const Spacer(flex: 1),
+              ],
+            ),
           ),
         ),
       ),

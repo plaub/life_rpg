@@ -29,6 +29,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final theme = Theme.of(context);
 
     // Listen to level changes
     ref.listen(avatarProgressProvider, (previous, next) {
@@ -71,31 +72,41 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
 
     return Scaffold(
       body: widget.navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: widget.navigationShell.currentIndex,
-        onTap: _onTap,
-        type: BottomNavigationBarType
-            .fixed, // Use fixed to show all labels if needed
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: localizations.homeTab,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: theme.colorScheme.outlineVariant,
+              width: 0.5,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(
-              Icons.bolt,
-            ), // Or workspace_premium, stars, auto_awesome
-            label: localizations.skillsTitle,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.analytics),
-            label: localizations.analyticsTab,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
-            label: localizations.settingsTab,
-          ),
-        ],
+        ),
+        child: NavigationBar(
+          selectedIndex: widget.navigationShell.currentIndex,
+          onDestinationSelected: _onTap,
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home_rounded),
+              label: localizations.homeTab,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.bolt_outlined),
+              selectedIcon: const Icon(Icons.bolt_rounded),
+              label: localizations.skillsTitle,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.analytics_outlined),
+              selectedIcon: const Icon(Icons.analytics_rounded),
+              label: localizations.analyticsTab,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.settings_outlined),
+              selectedIcon: const Icon(Icons.settings_rounded),
+              label: localizations.settingsTab,
+            ),
+          ],
+        ),
       ),
     );
   }

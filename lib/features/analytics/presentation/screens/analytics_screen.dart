@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../skill/presentation/providers/skill_providers.dart';
 import '../components/skill_radar_chart.dart';
 import '../components/active_days_chart.dart';
@@ -11,8 +12,6 @@ class AnalyticsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-
     final skillsAsync = ref.watch(skillsProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
     final logsAsync = ref.watch(allLogsStreamProvider);
@@ -20,7 +19,7 @@ class AnalyticsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(localizations.analyticsTitle)),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -49,26 +48,26 @@ class AnalyticsScreen extends ConsumerWidget {
                           child: _MetricCard(
                             label: localizations.analyticsTotalXp,
                             value: totalXp.toString(),
-                            icon: Icons.bolt,
-                            color: Colors.amber,
+                            icon: Icons.bolt_rounded,
+                            color: AppColors.xpGold,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _MetricCard(
                             label: localizations.analyticsSkills,
                             value: skills.length.toString(),
-                            icon: Icons.star,
-                            color: Colors.blue,
+                            icon: Icons.star_rounded,
+                            color: AppColors.levelPurple,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _MetricCard(
                             label: localizations.analyticsTotalTime,
                             value: timeStr,
-                            icon: Icons.timer_outlined,
-                            color: Colors.teal,
+                            icon: Icons.timer_rounded,
+                            color: AppColors.successGreen,
                           ),
                         ),
                       ],
@@ -90,12 +89,7 @@ class AnalyticsScreen extends ConsumerWidget {
             const SizedBox(height: 32),
 
             // 2. Radar Chart
-            Text(
-              localizations.analyticsDistribution,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            _SectionHeader(title: localizations.analyticsDistribution),
             const SizedBox(height: 16),
             skillsAsync.when(
               data: (skills) {
@@ -154,12 +148,7 @@ class AnalyticsScreen extends ConsumerWidget {
             const SizedBox(height: 32),
 
             // 3. Active Days Chart
-            Text(
-              localizations.analyticsActiveDays,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            _SectionHeader(title: localizations.analyticsActiveDays),
             const SizedBox(height: 16),
             logsAsync.when(
               data: (logs) {
@@ -188,6 +177,37 @@ class AnalyticsScreen extends ConsumerWidget {
   }
 }
 
+/// Section header with decorative accent line
+class _SectionHeader extends StatelessWidget {
+  final String title;
+
+  const _SectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Container(
+          width: 3,
+          height: 20,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _MetricCard extends StatelessWidget {
   final String label;
   final String value;
@@ -204,41 +224,50 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(14.0),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: color, size: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              value,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
+        border: Border.all(
+          color: isDark
+              ? color.withValues(alpha: 0.2)
+              : theme.colorScheme.outlineVariant,
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  color.withValues(alpha: 0.15),
+                  color.withValues(alpha: 0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

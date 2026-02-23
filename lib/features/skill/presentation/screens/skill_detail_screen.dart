@@ -34,7 +34,7 @@ class SkillDetailScreen extends ConsumerWidget {
         actions: [
           if (config.isDebug)
             IconButton(
-              icon: const Icon(Icons.bug_report),
+              icon: const Icon(Icons.bug_report_rounded),
               tooltip: 'Debug: +50 XP',
               onPressed: () async {
                 final userId = ref.read(currentUserProvider)?.id;
@@ -52,7 +52,7 @@ class SkillDetailScreen extends ConsumerWidget {
               },
             ),
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.edit_rounded),
             onPressed: () {
               context.push(RouteNames.editSkill.replaceFirst(':id', skillId));
             },
@@ -89,11 +89,24 @@ class SkillDetailScreen extends ConsumerWidget {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  l10n.logsTab, // "Logs"
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      l10n.logsTab,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
@@ -118,7 +131,7 @@ class SkillDetailScreen extends ConsumerWidget {
                       QuickLogBottomSheet(skill: skillAsync.value!),
                 );
               },
-              icon: const Icon(Icons.timer),
+              icon: const Icon(Icons.timer_rounded),
               label: Text(l10n.quickLogButton),
             )
           : null,

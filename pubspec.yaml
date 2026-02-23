@@ -62,6 +62,9 @@ dependencies:
   emoji_picker_flutter: ^4.4.0
   confetti: ^0.8.0
 
+  # Home Screen Widget
+  home_widget: ^0.7.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Shows your level, XP progress, and stats</string>
+    <string name="widget_level">Level %d</string>
+    <string name="widget_xp_format">%1$d / %2$d XP</string>
+    <string name="widget_total_xp">⭐ %d</string>
+    <string name="widget_total_time">⏱️ %s</string>
+    <string name="widget_total_skills">📚 %d</string>
+</resources>

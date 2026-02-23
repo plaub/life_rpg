@@ -11,6 +11,7 @@ import '../../../profile/presentation/providers/profile_providers.dart';
 import '../../../avatar/presentation/providers/avatar_providers.dart';
 import '../../../skill/domain/services/debug_xp_service.dart';
 import '../../../../core/config/app_config.dart';
+import '../../../widget/widget_updater.dart';
 
 /// Home screen - MVP Overview of life progress
 class HomeScreen extends ConsumerWidget {
@@ -23,6 +24,9 @@ class HomeScreen extends ConsumerWidget {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final config = ref.watch(appConfigProvider);
+
+    // Keep home screen widget in sync with latest data
+    ref.watch(widgetUpdaterProvider);
 
     // Pull to refresh logic
     Future<void> onRefresh() async {
